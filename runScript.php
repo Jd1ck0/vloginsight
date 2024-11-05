@@ -3,16 +3,16 @@ $fileName = isset($_GET['file']) ? $_GET['file'] : null;
 
 if ($fileName) {
     $output = [];
-    $retval = null;t
-    $filePath = 'C:/xampp/htdocs/caps/uploads/' . $fileName;
-    exec("node C:/xampp/htdocs/caps/js/likertScale.js \"$filePath\"", $output, $retval);
+    $retval = null;
+    $filePath = 'uploads/' . $fileName;
+    exec("node js/likertScale.js \"$filePath\"", $output, $retval);
 
     if ($retval === 0) {
         $jsonFilePath = 'CommentsScale/commentsData.json';
         if (file_exists($jsonFilePath)) {
             $jsonData = file_get_contents($jsonFilePath);
             $results = json_decode($jsonData, true);
-            
+
             foreach ($results as $video => $comments) {
                 echo "<h3>Comments for $video</h3>";
                 foreach ($comments as $commentData) {
@@ -30,4 +30,3 @@ if ($fileName) {
 } else {
     echo "No file specified.";
 }
-?>

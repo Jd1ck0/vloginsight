@@ -28,88 +28,98 @@ $videoCommentsData = [];
 
 if ($fileName) {
     $filePath = 'uploads/' . htmlspecialchars($fileName);
-    if (file_exists($filePath)) {
-        $handle = fopen($filePath, 'r');
-        if ($handle !== false) {
-            $header = fgetcsv($handle);
-            if ($header) {
-                $nameIndex = array_search("Influencer Name", $header);
-                $platformIndex = array_search("Platform", $header);
-                $subCountIndex = array_search("Subscriber count", $header);
-                $videoLikesIndex = array_search("Video likes", $header);
-                $videoDurationIndex = array_search("Video duration", $header);
 
-                $hashtagIndices = [];
-                for ($i = 1; $i <= 5; $i++) {
-                    $hashtagIndices[$i] = array_search("Hashtags used v$i", $header);
+    if (!file_exists($filePath) || !is_readable($filePath)) {
+        echo "File not found or cannot be read.";
+        return;
+    }
+
+    if (($handle = fopen($filePath, 'r')) !== false) {
+        $header = fgetcsv($handle);
+
+        if ($header) {
+            $nameIndex = array_search("Influencer Name", $header);
+            $platformIndex = array_search("Platform", $header);
+            $subCountIndex = array_search("Subscriber count", $header);
+            $videoLikesIndex = array_search("Video likes", $header);
+            $videoDurationIndex = array_search("Video duration", $header);
+            $videoTitleIndex = array_search("Video Title", $header);
+            $videoViewsIndex = array_search("Video views", $header);
+
+            $hashtagIndices = array_map(
+                fn($i) => array_search("Hashtags used v$i", $header),
+                range(1, 5)
+            );
+            $commentIndices = array_map(
+                fn($i) => array_search("video{$i} total comments", $header),
+                range(1, 5)
+            );
+
+            while (($data = fgetcsv($handle)) !== false) {
+                if ($nameIndex !== false && !empty($data[$nameIndex])) {
+                    $influencerData[] = [
+                        'name' => htmlspecialchars($data[$nameIndex]),
+                        'platform' => htmlspecialchars($data[$platformIndex] ?? ''),
+                        'subscriber_count' => htmlspecialchars($data[$subCountIndex] ?? '')
+                    ];
                 }
 
-                $commentIndices = [];
-                for ($i = 1; $i <= 5; $i++) {
-                    $commentIndices[$i] = array_search("video{$i} total comments", $header);
+                if ($videoTitleIndex !== false && !empty($data[$videoTitleIndex])) {
+                    $videoData[] = [
+                        'title' => htmlspecialchars($data[$videoTitleIndex]),
+                        'views' => htmlspecialchars($data[$videoViewsIndex] ?? '0'),
+                        'likes' => (int)(parseViews(htmlspecialchars($data[$videoLikesIndex] ?? '0'))),
+                        'duration' => htmlspecialchars($data[$videoDurationIndex] ?? 'N/A')
+                    ];
                 }
 
-                while (($data = fgetcsv($handle)) !== false) {
-                    if (!empty($data[$nameIndex])) {
-                        $influencerData[] = [
-                            'name' => $nameIndex !== false ? htmlspecialchars($data[$nameIndex]) : '',
-                            'platform' => $platformIndex !== false ? htmlspecialchars($data[$platformIndex]) : '',
-                            'subscriber_count' => $subCountIndex !== false ? htmlspecialchars($data[$subCountIndex]) : '',
-                        ];
+                // Process hashtags and comments
+                foreach ($hashtagIndices as $i => $index) {
+                    if ($index !== false && !empty($data[$index])) {
+                        $hashtagsData[$i + 1][] = htmlspecialchars($data[$index]);
                     }
+                }
 
-                    $videoTitleIndex = array_search("Video Title", $header);
-                    $videoViewsIndex = array_search("Video views", $header);
-                    $videoTitle = $videoTitleIndex !== false ? htmlspecialchars($data[$videoTitleIndex]) : '';
-                    $videoViews = $videoViewsIndex !== false ? htmlspecialchars($data[$videoViewsIndex]) : '0';
-                    $videoLikes = $videoLikesIndex !== false ? parseViews(htmlspecialchars($data[$videoLikesIndex])) : 0;
-                    $videoDuration = $videoDurationIndex !== false ? htmlspecialchars($data[$videoDurationIndex]) : 'N/A';
-
-                    if ($videoTitle) {
-                        $videoData[] = [
-                            'title' => $videoTitle,
-                            'views' => $videoViews,
-                            'likes' => (int)$videoLikes,
-                            'duration' => $videoDuration,
-                        ];
-                    }
-
-                    foreach ($hashtagIndices as $i => $index) {
-                        if ($index !== false && !empty($data[$index])) {
-                            $hashtagsData[$i][] = htmlspecialchars($data[$index]);
-                        }
-                    }
-
-
-                    foreach ($commentIndices as $i => $index) {
-                        if ($index !== false && !empty($data[$index])) {
-                            $videoCommentsData[$i][] = htmlspecialchars($data[$index]);
-                        }
+                foreach ($commentIndices as $i => $index) {
+                    if ($index !== false && !empty($data[$index])) {
+                        $videoCommentsData[$i + 1][] = htmlspecialchars($data[$index]);
                     }
                 }
             }
+
             fclose($handle);
+        } else {
+            echo "Failed to read CSV header.";
+            return;
         }
+    } else {
+        echo "Failed to open the file.";
+        return;
     }
 
+    // Execute Node.js script and check result
     $output = [];
     $retval = null;
-    exec("node js\likertScale.js \"$filePath\"", $output, $retval);
+    exec("node js/likertScale.js \"$filePath\"", $output, $retval);
 
     if ($retval === 0) {
         $jsonFilePath = 'CommentsScale/commentsData.json';
-        if (file_exists($jsonFilePath)) {
+        if (file_exists($jsonFilePath) && is_readable($jsonFilePath)) {
             $jsonData = file_get_contents($jsonFilePath);
             $commentsData = json_decode($jsonData, true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                echo "Failed to decode JSON data: " . json_last_error_msg();
+            }
         } else {
-            echo "Output JSON file not found.";
+            echo "Output JSON file not found or unreadable.";
         }
     } else {
         echo "Script execution failed with return value: $retval<br>";
-        echo "Error output:<br>" . nl2br(htmlspecialchars(implode("\n", $output)));
-        $commentsData = [];
+        echo "Error outputss:<br>" . nl2br(htmlspecialchars(implode("\n", $output)));
     }
 }
+
+
 
 $averageViews = 0;
 if (count($videoData) > 0) {

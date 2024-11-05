@@ -184,7 +184,7 @@ if (count($filePaths) == 2) {
     $filePath2 = $filePaths[1];
 
     // Pass both file paths to the Node.js script
-    exec("node C:/xampp/htdocs/caps/js/likertScale.js \"$filePath1\" \"$filePath2\"", $output, $retval);
+    exec("node js/likertScale.js \"$filePath1\" \"$filePath2\"", $output, $retval);
 
     if ($retval === 0) {
         $jsonFilePath = 'CommentsScale/commentsData.json';

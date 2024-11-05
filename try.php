@@ -51,7 +51,7 @@ if (count($filePaths) === 2) {
     $retval = null;
 
     // Execute the Node.js script and pass the file paths as arguments
-    exec("node C:/xampp/htdocs/caps/js/c-likertScale.js \"$filePath1\" \"$filePath2\"", $output, $retval);
+    exec("node js/c-likertScale.js \"$filePath1\" \"$filePath2\"", $output, $retval);
 
     // Display the return value and output
     echo "<pre>";
