@@ -94,7 +94,7 @@ if ($fileName) {
 
     $output = [];
     $retval = null;
-    exec("node js\likertScale.js \"$filePath\"", $output, $retval);
+    exec("node \js\likertScale.js \"$filePath\"", $output, $retval);
 
     if ($retval === 0) {
         $jsonFilePath = 'CommentsScale/commentsData.json';
