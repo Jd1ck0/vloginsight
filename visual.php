@@ -72,8 +72,6 @@ if ($fileName) {
                         'duration' => htmlspecialchars($data[$videoDurationIndex] ?? 'N/A')
                     ];
                 }
-
-                // Process hashtags and comments
                 foreach ($hashtagIndices as $i => $index) {
                     if ($index !== false && !empty($data[$index])) {
                         $hashtagsData[$i + 1][] = htmlspecialchars($data[$index]);
@@ -97,7 +95,6 @@ if ($fileName) {
         return;
     }
 
-    // Execute Node.js script and check result
     $output = [];
     $retval = null;
     exec("node js/likertScale.js \"$filePath\"", $output, $retval);
