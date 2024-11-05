@@ -1,15 +1,15 @@
 <?php
-$servername = "localhost";
-$username = "u297599468_vloginsight";
-$password = "Vloginsight2024";
-$dbname = "u297599468_vloginsight_db";
+// $servername = "localhost";
+// $username = "u297599468_vloginsight";
+// $password = "Vloginsight2024";
+// $dbname = "u297599468_vloginsight_db";
 
 // local
 
-// $servername = "localhost";
-// $username = "root";
-// $password = "";
-// $dbname = "miles";
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "vloginsight";
 
 $con = new mysqli($servername, $username, $password, $dbname);
 
