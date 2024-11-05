@@ -94,7 +94,7 @@ if ($fileName) {
 
     $output = [];
     $retval = null;
-    exec("node js/likertScale.js \"$filePath\"", $output, $retval);
+    exec("node likertScale.js \"$filePath\"", $output, $retval);
 
     if ($retval === 0) {
         $jsonFilePath = 'CommentsScale/commentsData.json';
@@ -107,6 +107,7 @@ if ($fileName) {
     } else {
         echo "Script execution failed with return value: $retval<br>";
         echo "Error output:<br>" . nl2br(htmlspecialchars(implode("\n", $output)));
+        $commentsData = [];
     }
 }
 
