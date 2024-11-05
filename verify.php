@@ -50,8 +50,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (mysqli_num_rows($resultUsername) > 0) {
         echo '<script>alert("Username is already taken."); window.location.href = "register.php";</script>';
     } else {
-        $sql = "INSERT INTO `user_info` (`username`, `email`, `password`, `confirmation_code`)
-                VALUES ('$username', '$email', '$password', '$confirmationCode')";
+        $sql = "INSERT INTO `user_info` (`username`, `email`, `password`, `confirmation_code`, `forgot_password_code`)
+                VALUES ('$username', '$email', '$password', '$confirmationCode', '')";
 
         if (mysqli_query($con, $sql)) {
             try {
