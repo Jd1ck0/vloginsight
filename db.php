@@ -11,8 +11,8 @@ $dbname = "u297599468_vloginsight_db";
 // $password = "";
 // $dbname = "miles";
 
-$con = new mysqli($servername, $username, $password, $dbname);
+$conn = new mysqli($servername, $username, $password, $dbname);
 
-if ($con->connect_error) {
-    die("Connection failed: " . $con->connect_error);
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
 }
