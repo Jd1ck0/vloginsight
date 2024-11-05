@@ -20,6 +20,7 @@ $result = $stmt->get_result();
 if (isset($_GET['message']) && $_GET['message'] === 'success') {
     echo "<script>alert('File successfully deleted.');</script>";
 }
+$username = $_SESSION['username'];
 ?>
 
 <!DOCTYPE html>
