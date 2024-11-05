@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VlogInsight Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            display: flex;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .sidebar {
+            width: 250px; 
+            height: 100vh; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            background-color: #f4f4f4; 
+            overflow-y: auto; 
+            padding: 20px; 
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); 
+            z-index: 1000;
+        }
+        .logout-button img {
+            width: 20px;
+            height: auto;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="profile">
+            <span class="v1">Vlog</span><span class="s1">Insight</span>
+            <div class="user-info">
+                <span class="username" style="font-size: 25px;"><?php echo htmlspecialchars($username); ?></span>
+                <button class="logout-button" onclick="window.location.href='login.php'">
+                    <img src="pic/logout.png" alt="Logout">
+                </button>
+            </div>
+        </div>
+        <nav class="nav-menu">
+            <a href="home.php" id="upload-link"><i class="fas fa-file-upload"></i> Upload CSV File</a>
+            <a href="#generate-report" id="generate-report-link"><i class="fas fa-chart-line"></i> Generate Report</a>
+            <div id="sub-menu" class="sub-menu" style="display: none;">
+                <a href="uploads.php" id="upload-sub-link"><i class="fas fa-file-upload"></i> File Uploads</a>
+            </div>
+        </nav>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const generateReportLink = document.getElementById('generate-report-link');
+            const subMenu = document.getElementById('sub-menu');
+
+            generateReportLink.addEventListener('click', (event) => {
+                event.preventDefault(); 
+                subMenu.style.display = subMenu.style.display === 'none' || subMenu.style.display === '' ? 'block' : 'none';
+            });
+        });
+    </script>
+</body>
+</html>

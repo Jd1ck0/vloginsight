@@ -1,0 +1,160 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    height: 100vh;
+}
+.v1{
+    color: red;
+    font-size:30px;
+}
+.s1{
+    color:blue;
+    font-size:30px;
+}
+.container {
+    display: flex;
+    width: 100%;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #FFDFD6;
+    color: black;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+.profile {
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-size: 24px;
+    margin: 0;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.username {
+    margin-right: 10px;
+}
+
+.logout-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.logout-button img {
+    width: 20px;
+    height: 20px;
+}
+.nav-menu {
+    display: flex;
+    flex-direction: column;
+}
+
+.menu-item {
+    position: relative;
+}
+
+.sub-menu {
+    display: none;
+    margin-top: 10px;
+}
+
+.sub-menu a {
+    display: block;
+    color: white;
+    text-decoration: none;
+    margin: 5px 0;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #34495e;
+    width: 200px;
+    text-align: center;
+}
+
+.sub-menu a:hover {
+    background-color: #1abc9c;
+}
+
+.nav-menu a {
+    display: block;
+    color: white;
+    text-decoration: none;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #34495e;
+    width: 200px;
+    text-align: center;
+}
+.nav-menu a:hover {
+    background-color: #1abc9c;
+}
+.nav-menu i {
+    margin-right: 8px; 
+}
+.purple-section {
+    width: 100%; 
+    background-color: #7E8EF1; 
+    color: black;
+    display: flex;
+    align-items: center; 
+    justify-content: center;
+    padding: 10px;
+    box-sizing: border-box;
+    height: 60px; 
+}
+.home-link {
+    color: black;
+    text-decoration: none;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+}
+.home-link i {
+    margin-right: 8px;
+}
+.content-area {
+    position: absolute;
+    left: 400px;
+    top: 150px; 
+    background: linear-gradient(to bottom, #E7833B, #2E55DF);
+    width: 800px;
+    height: 500px;
+    padding-top: 0px; 
+    box-sizing: border-box;
+}
+.upload-container {
+    padding: 20px;
+    margin-top: 200px;
+}
+.upload-container input[type="file"] {
+    margin-bottom: 10px;
+}
+.upload-button {
+    background-color: #34495e;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+.upload-button:hover {
+    background-color: #A1DD70;
+}
+
+
+
+
