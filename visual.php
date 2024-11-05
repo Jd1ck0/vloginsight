@@ -437,7 +437,7 @@ $videoDataJson = json_encode($videoData);
 
 
     <script>
-        //**Likert Scale*/
+     
         function getLikertDescription(score) {
             switch (score) {
                 case 5:
@@ -558,7 +558,7 @@ $videoDataJson = json_encode($videoData);
     </script>
 
     <script>
-        //**Views*/
+       
         const videoData = <?php echo json_encode($videoData); ?>;
         const currentFileId = "<?php echo $fileId; ?>";
         const labels = videoData.map((_, index) => `Video ${index + 1}`);
@@ -656,7 +656,7 @@ $videoDataJson = json_encode($videoData);
     </script>
 
     <script>
-        //**Overall LikertScale */
+       
 
         const fileId = "<?php echo $fileId; ?>";
 
