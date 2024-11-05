@@ -7,17 +7,7 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 
-// Database connection
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "vloginsight";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+include 'db.php';
 
 // Get file IDs from the query string
 $fileId1 = isset($_GET['file1']) ? intval($_GET['file1']) : 0;
@@ -27,7 +17,7 @@ $fileId2 = isset($_GET['file2']) ? intval($_GET['file2']) : 0;
 $fileNames = [];
 
 if ($fileId1) {
-    $stmt = $conn->prepare("SELECT file_name FROM csv_data WHERE id = ?");
+    $stmt = $con->prepare("SELECT file_name FROM csv_data WHERE id = ?");
     $stmt->bind_param("i", $fileId1);
     $stmt->execute();
     $stmt->bind_result($fileNames[0]);
@@ -36,7 +26,7 @@ if ($fileId1) {
 }
 
 if ($fileId2) {
-    $stmt = $conn->prepare("SELECT file_name FROM csv_data WHERE id = ?");
+    $stmt = $con->prepare("SELECT file_name FROM csv_data WHERE id = ?");
     $stmt->bind_param("i", $fileId2);
     $stmt->execute();
     $stmt->bind_result($fileNames[1]);
@@ -88,6 +78,7 @@ if (count($filePaths) === 2) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -97,26 +88,33 @@ if (count($filePaths) === 2) {
             font-family: Arial, sans-serif;
             margin: 20px;
         }
+
         .container {
             display: flex;
             justify-content: space-between;
         }
+
         .file-column {
             width: 48%;
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 10px;
         }
-        th, td {
+
+        th,
+        td {
             padding: 8px;
             text-align: left;
             border: 1px solid #ddd;
         }
+
         th {
             background-color: #f2f2f2;
         }
+
         .file-name {
             font-weight: bold;
             text-align: center;
@@ -124,63 +122,65 @@ if (count($filePaths) === 2) {
         }
     </style>
 </head>
+
 <body>
 
-<h1>Comparison of Comments Data</h1>
+    <h1>Comparison of Comments Data</h1>
 
-<div class="container">
-    <!-- First file column -->
-    <div class="file-column">
-        <div class="file-name">
-            <h3><?php echo htmlspecialchars($fileNames[0]); ?></h3>
-        </div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Video</th>
-                    <th>Comments</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                if (isset($commentsData[$fileNames[0]])) {
-                    foreach ($commentsData[$fileNames[0]] as $video => $comments) {
-                        echo "<tr><td>" . htmlspecialchars($video) . "</td><td>" . htmlspecialchars($comments) . "</td></tr>";
+    <div class="container">
+        <!-- First file column -->
+        <div class="file-column">
+            <div class="file-name">
+                <h3><?php echo htmlspecialchars($fileNames[0]); ?></h3>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Video</th>
+                        <th>Comments</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    if (isset($commentsData[$fileNames[0]])) {
+                        foreach ($commentsData[$fileNames[0]] as $video => $comments) {
+                            echo "<tr><td>" . htmlspecialchars($video) . "</td><td>" . htmlspecialchars($comments) . "</td></tr>";
+                        }
+                    } else {
+                        echo "<tr><td colspan='2'>No data available for this file.</td></tr>";
                     }
-                } else {
-                    echo "<tr><td colspan='2'>No data available for this file.</td></tr>";
-                }
-                ?>
-            </tbody>
-        </table>
-    </div>
+                    ?>
+                </tbody>
+            </table>
+        </div>
 
-    <!-- Second file column -->
-    <div class="file-column">
-        <div class="file-name">
-            <h3><?php echo htmlspecialchars($fileNames[1]); ?></h3>
-        </div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Video</th>
-                    <th>Comments</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                if (isset($commentsData[$fileNames[1]])) {
-                    foreach ($commentsData[$fileNames[1]] as $video => $comments) {
-                        echo "<tr><td>" . htmlspecialchars($video) . "</td><td>" . htmlspecialchars($comments) . "</td></tr>";
+        <!-- Second file column -->
+        <div class="file-column">
+            <div class="file-name">
+                <h3><?php echo htmlspecialchars($fileNames[1]); ?></h3>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Video</th>
+                        <th>Comments</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    if (isset($commentsData[$fileNames[1]])) {
+                        foreach ($commentsData[$fileNames[1]] as $video => $comments) {
+                            echo "<tr><td>" . htmlspecialchars($video) . "</td><td>" . htmlspecialchars($comments) . "</td></tr>";
+                        }
+                    } else {
+                        echo "<tr><td colspan='2'>No data available for this file.</td></tr>";
                     }
-                } else {
-                    echo "<tr><td colspan='2'>No data available for this file.</td></tr>";
-                }
-                ?>
-            </tbody>
-        </table>
+                    ?>
+                </tbody>
+            </table>
+        </div>
     </div>
-</div>
 
 </body>
+
 </html>

@@ -1,18 +1,9 @@
 <?php
 session_start();
-$servername = "localhost"; 
-$username = "root"; 
-$password = ""; 
-$dbname = "vloginsight";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+include 'db.php';
 
 if (!isset($_SESSION['username'])) {
-    header("Location: login.php"); 
+    header("Location: login.php");
     exit();
 }
 
@@ -21,31 +12,31 @@ $username = $_SESSION['username'];
 if (isset($_GET['id'])) {
     $fileId = $_GET['id'];
 
-    $stmt = $conn->prepare("SELECT file_name, file_data FROM csv_data WHERE id = ?");
+    $stmt = $con->prepare("SELECT file_name, file_data FROM csv_data WHERE id = ?");
     $stmt->bind_param("i", $fileId);
     $stmt->execute();
     $stmt->bind_result($fileName, $fileData);
     $stmt->fetch();
 
     if ($fileName && $fileData) {
-        $rows = explode("\n", trim($fileData)); 
+        $rows = explode("\n", trim($fileData));
         $table = '<table>';
-        
+
         if (!empty($rows[0])) {
-            $header = str_getcsv(array_shift($rows)); 
+            $header = str_getcsv(array_shift($rows));
             $table .= '<tr>';
             foreach ($header as $col) {
-                $table .= '<th>' . htmlspecialchars(trim($col)) . '</th>'; 
+                $table .= '<th>' . htmlspecialchars(trim($col)) . '</th>';
             }
             $table .= '</tr>';
         }
 
         foreach ($rows as $row) {
-        
+
             $cols = str_getcsv($row);
             $table .= '<tr>';
             foreach ($cols as $col) {
-                $table .= '<td>' . htmlspecialchars(trim($col)) . '</td>'; 
+                $table .= '<td>' . htmlspecialchars(trim($col)) . '</td>';
             }
             $table .= '</tr>';
         }
@@ -124,5 +115,4 @@ if (isset($_GET['id'])) {
     echo "No file specified.";
 }
 
-$conn->close();
-?>
+$con->close();

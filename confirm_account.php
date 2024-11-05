@@ -1,8 +1,5 @@
 <?php
-$con = mysqli_connect("localhost", "root", "", "vloginsight", 3306);
-if (!$con) {
-    die("Could not connect: " . mysqli_connect_error());
-}
+include 'db.php';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $userConfirmationCode = mysqli_real_escape_string($con, $_POST['code']);
     if (!empty($userConfirmationCode)) {

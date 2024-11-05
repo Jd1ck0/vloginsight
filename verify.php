@@ -1,9 +1,5 @@
 <?php
-$con = mysqli_connect("localhost", "root", "", "vloginsight", 3306);
-
-if (!$con) {
-    die("Could not connect: " . mysqli_connect_error());
-}
+include 'db.php';
 
 function generateRandomCode($length = 5) {
     $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';

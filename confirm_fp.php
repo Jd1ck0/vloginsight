@@ -1,12 +1,6 @@
 <?php
 session_start(); 
-
-$con = mysqli_connect("localhost", "root", "", "vloginsight", 3306);
-
-if (!$con) {
-    die("Could not connect: " . mysqli_connect_error());
-}
-
+include 'db.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 

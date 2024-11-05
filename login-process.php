@@ -5,7 +5,7 @@ $user = $_POST['username'];
 $pass = $_POST['password'];
 
 $sql = "SELECT * FROM user_info WHERE username = ? AND password = ? AND status = 'verified'";
-$stmt = $conn->prepare($sql);
+$stmt = $con->prepare($sql);
 $stmt->bind_param("ss", $user, $pass);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -20,4 +20,4 @@ if ($result->num_rows > 0) {
 }
 
 $stmt->close();
-$conn->close();
+$con->close();
