@@ -94,7 +94,7 @@ if ($fileName) {
 
     $output = [];
     $retval = null;
-    exec("node C:/xampp/htdocs/caps/js/likertScale.js \"$filePath\"", $output, $retval);
+    exec("js/likertScale.js \"$filePath\"", $output, $retval);
 
     if ($retval === 0) {
         $jsonFilePath = 'CommentsScale/commentsData.json';
