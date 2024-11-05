@@ -1,7 +1,8 @@
 <?php
 include 'db.php';
 
-function generateRandomCode($length = 5) {
+function generateRandomCode($length = 5)
+{
     $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     $code = '';
 
@@ -16,9 +17,11 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
-require 'C:\Xampp\htdocs\PHPMailer\PHPMailer\src\Exception.php';
-require 'C:\Xampp\htdocs\PHPMailer\PHPMailer\src\PHPMailer.php';
-require 'C:\Xampp\htdocs\PHPMailer\PHPMailer\src\SMTP.php';
+
+require 'PHPMailer/PHPMailer/src/PHPMailer.php';
+require 'PHPMailer/PHPMailer/src/Exception.php';
+require 'PHPMailer/PHPMailer/src/SMTP.php';
+
 
 $mail = new PHPMailer(true);
 
@@ -33,13 +36,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $checkEmailQuery = "SELECT * FROM `user_info` WHERE email = '$email'";
     $resultEmail = mysqli_query($con, $checkEmailQuery);
 
-   
+
     $checkUsernameQuery = "SELECT * FROM `user_info` WHERE username = '$username'";
     $resultUsername = mysqli_query($con, $checkUsernameQuery);
 
     if ($password !== $confirm_password) {
         echo '<script>alert("Passwords do not match."); window.location.href = "register.php";</script>';
-        exit; 
+        exit;
     }
 
     if (mysqli_num_rows($resultEmail) > 0) {
@@ -82,4 +85,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 mysqli_close($con);
-?>

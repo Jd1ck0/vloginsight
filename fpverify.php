@@ -1,38 +1,38 @@
-
 <style>
-      #imeds {
-            width: 440px;
-            height: 440px;
-            margin-left: 420px;
-         
-        }
+    #imeds {
+        width: 440px;
+        height: 440px;
+        margin-left: 420px;
 
-        .success-message {
-            margin-top: 10px;
-            margin-bottom: 20px;
-            font-size: 85px;
-            color: green;
-            text-align: center;
-        }
+    }
 
-        #home-link {
-            display: block;
-            margin-top: 20px;
-            text-decoration: none;
-            background-color: #4CAF50;
-            color: white;
-            padding: 18px 42px;
-            border-radius: 5px;
-            text-align: center;
-            font-size: 45px;
-         
-        }
+    .success-message {
+        margin-top: 10px;
+        margin-bottom: 20px;
+        font-size: 85px;
+        color: green;
+        text-align: center;
+    }
+
+    #home-link {
+        display: block;
+        margin-top: 20px;
+        text-decoration: none;
+        background-color: #4CAF50;
+        color: white;
+        padding: 18px 42px;
+        border-radius: 5px;
+        text-align: center;
+        font-size: 45px;
+
+    }
 </style>
 
 
 <?php
 include 'db.php';
-function generateRandomCode($length = 8) {
+function generateRandomCode($length = 8)
+{
     $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     $code = '';
 
@@ -47,9 +47,10 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
-require 'C:\Xampp\htdocs\PHPMailer\PHPMailer\src\Exception.php';
-require 'C:\Xampp\htdocs\PHPMailer\PHPMailer\src\PHPMailer.php';
-require 'C:\Xampp\htdocs\PHPMailer\PHPMailer\src\SMTP.php';
+require 'PHPMailer/PHPMailer/src/PHPMailer.php';
+require 'PHPMailer/PHPMailer/src/Exception.php';
+require 'PHPMailer/PHPMailer/src/SMTP.php';
+
 
 $mail = new PHPMailer(true);
 
@@ -64,16 +65,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (mysqli_num_rows($resultEmail) > 0) {
 
         $sql = "UPDATE `user_info` SET forgot_password_code = '$newCode' WHERE email = '$email'";
-        
+
         if (mysqli_query($con, $sql)) {
             try {
-        
+
                 $mail->SMTPDebug = SMTP::DEBUG_SERVER;
                 $mail->isSMTP();
                 $mail->Host       = 'smtp.gmail.com';
                 $mail->SMTPAuth   = true;
-                $mail->Username   = 'joshua.gonzales.212@gmail.com'; 
-                $mail->Password   = 'owtjjgqjqjrmpwes'; 
+                $mail->Username   = 'joshua.gonzales.212@gmail.com';
+                $mail->Password   = 'owtjjgqjqjrmpwes';
                 $mail->SMTPSecure = 'ssl';
                 $mail->Port       = 465;
 
