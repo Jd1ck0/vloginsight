@@ -52,6 +52,7 @@ require 'PHPMailer/PHPMailer/src/Exception.php';
 require 'PHPMailer/PHPMailer/src/SMTP.php';
 
 
+
 $mail = new PHPMailer(true);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
