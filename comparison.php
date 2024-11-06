@@ -28,7 +28,7 @@ function parseCSV($filePath)
         'influencers' => [],
         'videos' => [],
         'hashtags' => [],
-        'total_comments' => [] // To store total comments
+        'total_comments' => [] 
     ];
 
     if (($handle = fopen($filePath, 'r')) !== FALSE) {
@@ -42,11 +42,10 @@ function parseCSV($filePath)
             $videoLikesIndex = array_search("Video likes", $header);
             $videoDurationIndex = array_search("Video duration", $header);
 
-            // Capture total comments
             for ($i = 1; $i <= 5; $i++) {
                 $totalCommentsIndex = array_search("video{$i} total comments", $header);
                 if ($totalCommentsIndex !== false) {
-                    $data['total_comments'][$i] = 0; // Initialize total comments
+                    $data['total_comments'][$i] = 0; 
                 }
             }
 
@@ -73,7 +72,6 @@ function parseCSV($filePath)
                     ];
                 }
 
-                // Capture total comments
                 foreach ($data['total_comments'] as $i => &$commentCount) {
                     $totalCommentsIndex = array_search("video{$i} total comments", $header);
                     if ($totalCommentsIndex !== false && !empty($row[$totalCommentsIndex])) {
@@ -123,7 +121,7 @@ $videoData2 = [];
 $hashtagsData1 = [];
 $hashtagsData2 = [];
 $totalCommentsData1 = [];
-$totalCommentsData2 = []; // For total comments
+$totalCommentsData2 = []; 
 
 foreach ($fileNames as $index => $fileName) {
     if ($fileName) {
@@ -134,12 +132,12 @@ foreach ($fileNames as $index => $fileName) {
                 $data1 = $data['influencers'];
                 $videoData1 = $data['videos'];
                 $hashtagsData1 = $data['hashtags'];
-                $totalCommentsData1 = $data['total_comments']; // Capture total comments for file 1
+                $totalCommentsData1 = $data['total_comments']; 
             } else {
                 $data2 = $data['influencers'];
                 $videoData2 = $data['videos'];
                 $hashtagsData2 = $data['hashtags'];
-                $totalCommentsData2 = $data['total_comments']; // Capture total comments for file 2
+                $totalCommentsData2 = $data['total_comments']; 
             }
             $filePaths[] = $filePath;
         }
@@ -178,16 +176,15 @@ function calculateAverageViews($views)
 $output = [];
 $retval = null;
 
-// Ensure both file paths are provided to the Node.js script
+
 if (count($filePaths) == 2) {
     $filePath1 = $filePaths[0];
     $filePath2 = $filePaths[1];
 
-    // Pass both file paths to the Node.js script
-    exec("node js/likertScale.js \"$filePath1\" \"$filePath2\"", $output, $retval);
+    exec("node js/c-likertScale.js \"$filePath1\" \"$filePath2\"", $output, $retval);
 
     if ($retval === 0) {
-        $jsonFilePath = 'CommentsScale/commentsData.json';
+        $jsonFilePath = 'CommentsScale/c-commentsData.json';
         if (file_exists($jsonFilePath)) {
             $jsonData = file_get_contents($jsonFilePath);
             $commentsData = json_decode($jsonData, true);
@@ -232,7 +229,10 @@ $averageViews2 = calculateAverageViews($views2);
         .c-hashtags-used,
         .c-total-comments-container,
         .c-average-comments-container,
-        .c-comments-container {
+        .c-comments-container,
+        .c-comments-graph,
+        .c-summary,
+        .c-conclusion{
             width: 50%;
             border: solid 3px black;
             background-color: #FEF9F2;
@@ -296,6 +296,25 @@ $averageViews2 = calculateAverageViews($views2);
         .c-total-comments-container {
             display: flex;
             justify-content: space-between;
+        }
+        .c-summary h1 {
+            margin-bottom: 20px; 
+        }
+        .summary-row {
+            display: flex;
+            justify-content: center;
+            gap: 50px; 
+        }
+        .file-summary {
+            text-align: left; 
+        }
+        .file-summary h3 {
+            margin: 0;
+            font-size: 30px;
+        }
+        .file-summary p {
+            margin-top: 10px;
+            font-size: 25px;
         }
     </style>
 </head>
@@ -444,8 +463,194 @@ $averageViews2 = calculateAverageViews($views2);
         ?>
     </div>
 
-    <div class="c-comments-container">
-    </div>
+<div class="c-comments-container">
+    <?php
+    if (isset($commentsData)) {
+        foreach (['file1', 'file2'] as $index => $fileKey) {
+            $fileName = isset($fileNames[$index]) ? $fileNames[$index] : "Unknown File";
+            echo "<u><h3 style='font-size: 45px;'>Comments from " . htmlspecialchars($fileName) . "</h3></u>";
+            foreach ($commentsData[$fileKey] as $videoKey => $comments) {
+                echo "<div class='video-comment' style='position: relative; background-color: white; text-align:left;'>";
+
+                echo "<h4>Comments for " . htmlspecialchars($videoKey) . ":</h4>";
+                echo "<i class='graph-icon fas fa-chart-bar' onclick='toggleGraph(event, " . htmlspecialchars(json_encode($comments)) . ", \"$fileKey\", \"$videoKey\")' style='cursor: pointer; position: absolute; top: 0; right: 0;'></i>";
+
+                echo "<div class='comment-content'>";
+
+                foreach ($comments as $index => $commentData) {
+                    echo "<div class='comment'>";
+                    echo "<b>Comment " . ($index + 1) . ":</b> " . htmlspecialchars($commentData['comment']);
+                    echo "</div>";
+                    echo "<div><b>Likert Score:</b> " . ($commentData['likertScore'] !== null ? $commentData['likertScore'] : 'N/A') . "</div>";
+                }
+
+                echo "</div>"; 
+
+ 
+                echo "<div class='graph-container' id='graph-container-" . htmlspecialchars($fileKey) . "-" . htmlspecialchars($videoKey) . "' style='display: none; margin-top: 20px;'>";
+                echo "<canvas class='comment-graph' id='graph-" . htmlspecialchars($fileKey) . "-" . htmlspecialchars($videoKey) . "'></canvas>";
+                echo "<div class='likert-description' style='display: none;'></div>";
+                echo "</div>"; 
+
+                echo "</div>"; 
+            }
+        }
+    } else {
+        echo "<p>No sentiment data available.</p>";
+    }
+    ?>
+</div>
+
+<div class="c-comments-graph">
+    <h1 style = "font-size:30px;"> Total Comments Likert Scale</h1>
+    <canvas id="overall-comparison-graph" width="500" height="400"></canvas>
+</div>
+
+<div class="c-summary">
+    <h1 style="font-size:30px;">TOTAL SUMMARY</h1>
+    <table border="1" cellpadding="10" cellspacing="0" style="width:100%; border-collapse: collapse;">
+        <thead>
+            <tr>
+                <th colspan="2" style="text-align:center;"><?php echo isset($fileNames[0]) ? htmlspecialchars($fileNames[0]) : 'File 1'; ?></th>
+                <th colspan="2" style="text-align:center;"><?php echo isset($fileNames[1]) ? htmlspecialchars($fileNames[1]) : 'File 2'; ?></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Name</td>
+                <td><?php echo isset($data1[0]['name']) ? htmlspecialchars($data1[0]['name']) : 'N/A'; ?></td>
+                <td>Name</td>
+                <td><?php echo isset($data2[0]['name']) ? htmlspecialchars($data2[0]['name']) : 'N/A'; ?></td>
+            </tr>
+            <tr>
+                <td>Platform</td>
+                <td><?php echo isset($data1[0]['platform']) ? htmlspecialchars($data1[0]['platform']) : 'N/A'; ?></td>
+                <td>Platform</td>
+                <td><?php echo isset($data2[0]['platform']) ? htmlspecialchars($data2[0]['platform']) : 'N/A'; ?></td>
+            </tr>
+            <tr>
+            <td>Subscriber</td>
+                <td><?php echo isset($data1[0]['subscribers']) ? htmlspecialchars($data1[0]['subscribers']) : 'N/A'; ?></td>
+                <td>Subscriber</td>
+                <td><?php echo isset($data2[0]['subscribers']) ? htmlspecialchars($data2[0]['subscribers']) : 'N/A'; ?></td>
+            </tr>
+            <tr>
+                <td>Total Comments</td>
+                <td><?php echo isset($totalComments1) ? number_format($totalComments1) : 'N/A'; ?></td>
+                <td>Total Comments</td>
+                <td><?php echo isset($totalComments2) ? number_format($totalComments2) : 'N/A'; ?></td>
+            </tr>
+            <tr>
+                <td>Average Comments</td>
+                <td><?php echo isset($averageComments1) ? number_format($averageComments1, 2) : 'N/A'; ?></td>
+                <td>Average Comments</td>
+                <td><?php echo isset($averageComments2) ? number_format($averageComments2, 2) : 'N/A'; ?></td>
+            </tr>
+            <tr>
+                <td>Average Views</td>
+                <td><?php echo isset($averageViews1) ? number_format($averageViews1) : 'N/A'; ?></td>
+                <td>Average Views</td>
+                <td><?php echo isset($averageViews2) ? number_format($averageViews2) : 'N/A'; ?></td>
+            </tr>
+            <tr>
+    <td>Average Likert Scale</td>
+    <td id="avgLikertFile1">
+    <?php 
+    if (isset($commentsData['file1']) && count($commentsData['file1']) > 0) {
+        $validLikert1 = array_filter($commentsData['file1'], function($comment) {
+            return isset($comment['likertScore']) && is_numeric($comment['likertScore']);
+        });
+        
+        if (count($validLikert1) > 0) {
+            $avgLikert1 = array_sum(array_column($validLikert1, 'likertScore')) / count($validLikert1);
+            echo number_format($avgLikert1, 2); 
+        } else {
+            echo 'N/A';
+            $avgLikert1 = 'N/A'; 
+        }
+    } else {
+        echo 'N/A';
+        $avgLikert1 = 'N/A'; 
+    }
+    ?>
+    </td>
+    <td>Average Likert Scale</td>
+        <td id="avgLikertFile2">
+            <?php 
+            if (isset($commentsData['file2']) && count($commentsData['file2']) > 0) {
+            $validLikert2 = array_filter($commentsData['file2'], function($comment) {
+            return isset($comment['likertScore']) && is_numeric($comment['likertScore']);
+            });
+        
+            if (count($validLikert2) > 0) {
+            $avgLikert2 = array_sum(array_column($validLikert2, 'likertScore')) / count($validLikert2);
+            echo number_format($avgLikert2, 2); 
+            } else {
+            echo 'N/A';
+            $avgLikert2 = 'N/A'; 
+            }
+        } else {
+            echo 'N/A';
+            $avgLikert2 = 'N/A'; 
+    }
+    ?>
+    </td>
+    </tr>
+        </tbody>
+    </table>
+</div>
+
+
+<div class="c-conclusion">
+    <h2>Conclusion</h2>
+    <p>
+        <?php
+        $conclusion = '';
+        if (isset($data1[0]['subscribers']) && isset($data2[0]['subscribers'])) {
+            if ($data1[0]['subscribers'] > $data2[0]['subscribers']) {
+                $conclusion .= "File 1 has a higher subscriber count with " . htmlspecialchars($data1[0]['subscribers']) . " subscribers, compared to File 2 with " . htmlspecialchars($data2[0]['subscribers']) . " subscribers. ";
+            } elseif ($data1[0]['subscribers'] < $data2[0]['subscribers']) {
+                $conclusion .= "File 2 has a higher subscriber count with " . htmlspecialchars($data2[0]['subscribers']) . " subscribers, compared to File 1 with " . htmlspecialchars($data1[0]['subscribers']) . " subscribers. ";
+            } else {
+                $conclusion .= "Both files have the same number of subscribers: " . htmlspecialchars($data1[0]['subscribers']) . " subscribers. ";
+            }
+        }
+
+        if (isset($totalComments1) && isset($totalComments2)) {
+            if ($totalComments1 > $totalComments2) {
+                $conclusion .= "File 1 has more total comments with " . htmlspecialchars($totalComments1) . " comments, compared to File 2 with " . htmlspecialchars($totalComments2) . " comments. ";
+            } elseif ($totalComments1 < $totalComments2) {
+                $conclusion .= "File 2 has more total comments with " . htmlspecialchars($totalComments2) . " comments, compared to File 1 with " . htmlspecialchars($totalComments1) . " comments. ";
+            } else {
+                $conclusion .= "Both files have the same total number of comments: " . htmlspecialchars($totalComments1) . " comments. ";
+            }
+        }
+
+        if (isset($averageComments1) && isset($averageComments2)) {
+            if ($averageComments1 > $averageComments2) {
+                $conclusion .= "File 1 has a higher average comment count of " . htmlspecialchars($averageComments1) . " comments, compared to File 2's " . htmlspecialchars($averageComments2) . " comments. ";
+            } elseif ($averageComments1 < $averageComments2) {
+                $conclusion .= "File 2 has a higher average comment count of " . htmlspecialchars($averageComments2) . " comments, compared to File 1's " . htmlspecialchars($averageComments1) . " comments. ";
+            } else {
+                $conclusion .= "Both files have the same average comment count: " . htmlspecialchars($averageComments1) . " comments. ";
+            }
+        }
+
+        if (isset($averageViews1) && isset($averageViews2)) {
+            if ($averageViews1 > $averageViews2) {
+                $conclusion .= "File 1 has a higher average view count with " . htmlspecialchars($averageViews1) . " views, compared to File 2 with " . htmlspecialchars($averageViews2) . " views. ";
+            } elseif ($averageViews1 < $averageViews2) {
+                $conclusion .= "File 2 has a higher average view count with " . htmlspecialchars($averageViews2) . " views, compared to File 1 with " . htmlspecialchars($averageViews1) . " views. ";
+            } else {
+                $conclusion .= "Both files have the same average view count: " . htmlspecialchars($averageViews1) . " views. ";
+            }
+        }
+        
+        echo $conclusion;
+        ?>
+    </p>
+</div>
+
 
 
     <div class="c-hashtags-used">
@@ -456,8 +661,7 @@ $averageViews2 = calculateAverageViews($views2);
         <?php echo $hashtagsOutput2; ?>
     </div>
 
-
-    <script>
+<script>
         //**Views*/
         const titles1 = <?php echo json_encode($titles1); ?>;
         const views1 = <?php echo json_encode($views1); ?>;
@@ -526,7 +730,190 @@ $averageViews2 = calculateAverageViews($views2);
         };
 
         const videoChart = new Chart(ctx, config);
-    </script>
+</script>
+
+
+<script>
+   function toggleGraph(event, commentsData, fileKey, videoKey) {
+
+    var parentDiv = event.target.closest('.video-comment');
+    
+
+    var graphContainer = document.getElementById('graph-container-' + fileKey + '-' + videoKey);
+
+    if (graphContainer.style.display === 'none' || graphContainer.style.display === '') {
+        graphContainer.style.display = 'block';
+
+     
+        if (!graphContainer.querySelector('canvas').hasAttribute('data-rendered')) {
+            renderGraph(commentsData, fileKey, videoKey);
+        }
+    } else {
+        graphContainer.style.display = 'none';  
+    }
+    }
+
+
+    function renderGraph(commentsData, fileKey, videoKey) {
+   
+    var ctx = document.getElementById('graph-' + fileKey + '-' + videoKey).getContext('2d');
+
+    var likertScores = commentsData.map(function(comment) {
+        return comment.likertScore;
+    });
+
+    var chart = new Chart(ctx, {
+        type: 'bar', 
+        data: {
+            labels: commentsData.map(function(comment, index) {
+                return 'Comment ' + (index + 1);
+            }),
+            datasets: [{
+                label: 'Likert Score',
+                data: likertScores,
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    min: 1,      
+                    max: 5,      
+                    stepSize: 1, 
+                    ticks: {
+                        beginAtZero: false,  
+                        stepSize: 1,         
+                        callback: function(value) {
+    
+                            if (value >= 1 && value <= 5) {
+                                return value; 
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    });
+    document.getElementById('graph-' + fileKey + '-' + videoKey).setAttribute('data-rendered', 'true');
+    }
+
+</script>
+
+<script type="text/javascript">
+
+    var fileName1 = <?php echo json_encode($fileNames[0] ?? 'File 1'); ?>;
+    var fileName2 = <?php echo json_encode($fileNames[1] ?? 'File 2'); ?>;
+
+  
+    var commentsDataFile1 = {
+        video1: [{ likertScore: 4 }, { likertScore: 5 }],
+        video2: [{ likertScore: 3 }, { likertScore: 2 }],
+        video3: [{ likertScore: 4 }],
+        video4: [{ likertScore: 5 }],
+        video5: [{ likertScore: 2 }, { likertScore: 3 }]
+    };
+
+    var commentsDataFile2 = {
+        video1: [{ likertScore: 3 }, { likertScore: 2 }],
+        video2: [{ likertScore: 5 }],
+        video3: [{ likertScore: 3 }, { likertScore: 4 }],
+        video4: [{ likertScore: 4 }],
+        video5: [{ likertScore: 1 }]
+    };
+
+    //
+    renderOverallComparisonGraph(commentsDataFile1, commentsDataFile2, fileName1, fileName2);
+</script>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    var commentsDataFile1 = <?php echo json_encode($commentsData['file1'] ?? []); ?>;
+    var commentsDataFile2 = <?php echo json_encode($commentsData['file2'] ?? []); ?>;
+  
+    var fileName1 = <?php echo json_encode($fileNames[0] ?? 'File 1'); ?>;
+    var fileName2 = <?php echo json_encode($fileNames[1] ?? 'File 2'); ?>;
+
+    renderOverallComparisonGraph(commentsDataFile1, commentsDataFile2, fileName1, fileName2);
+    });
+
+    function renderOverallComparisonGraph(commentsDataFile1, commentsDataFile2, fileName1, fileName2) {
+   
+    var totalLikertFile1 = 0;
+    var totalCommentsFile1 = 0;
+
+    for (var videoKey in commentsDataFile1) {
+        var scores = commentsDataFile1[videoKey].map(function(comment) {
+            return comment.likertScore;
+        });
+        totalLikertFile1 += scores.reduce((a, b) => a + b, 0);
+        totalCommentsFile1 += scores.length;
+    }
+
+    var avgLikertFile1 = totalCommentsFile1 > 0 ? totalLikertFile1 / totalCommentsFile1 : 0;
+
+
+    var totalLikertFile2 = 0;
+    var totalCommentsFile2 = 0;
+
+    for (var videoKey in commentsDataFile2) {
+        var scores = commentsDataFile2[videoKey].map(function(comment) {
+            return comment.likertScore;
+        });
+        totalLikertFile2 += scores.reduce((a, b) => a + b, 0);
+        totalCommentsFile2 += scores.length;
+    }
+
+    var avgLikertFile2 = totalCommentsFile2 > 0 ? totalLikertFile2 / totalCommentsFile2 : 0;
+
+    var ctx = document.getElementById('overall-comparison-graph').getContext('2d');
+    var chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: [fileName1, fileName2],
+            datasets: [{
+                label: 'Average Likert Score',
+                data: [avgLikertFile1, avgLikertFile2],
+                backgroundColor: ['rgba(54, 162, 235, 0.6)', 'rgba(255, 99, 132, 0.6)'],
+                borderColor: ['rgba(54, 162, 235, 1)', 'rgba(255, 99, 132, 1)'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    min: 1,
+                    max: 5,
+                    stepSize: 1,
+                    ticks: {
+                        beginAtZero: false,
+                        callback: function(value) {
+                            return value;
+                        }
+                    }
+                }
+            },
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+
+
+    var avgLikertFile1Formatted = avgLikertFile1 > 0 ? avgLikertFile1.toFixed(2) : 'N/A';
+    var avgLikertFile2Formatted = avgLikertFile2 > 0 ? avgLikertFile2.toFixed(2) : 'N/A';
+
+    document.querySelector('#avgLikertFile1').textContent = avgLikertFile1Formatted;
+    document.querySelector('#avgLikertFile2').textContent = avgLikertFile2Formatted;
+    }
+
+
+</script>
 
 </body>
 

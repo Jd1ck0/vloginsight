@@ -51,7 +51,6 @@ $con->close();
         <div class="login-container">
             <form action="forgotpassword.php" method="post">
                 <h2 style="text-align:center;">RESET PASSWORD </h2>
-                <input type="text" id="username" placeholder="username" name="username" required>
                 <input type="password" id="password" placeholder="new password" name="password" required>
                 <input type="password" id="confirm_password" placeholder="confirm password" name="confirm_password" required>
                 <button type="submit">RESET</button>
@@ -63,6 +62,8 @@ $con->close();
             <h4>Unveiling Trends: Vlogger Popularity on Facebook and Youtube Through Data Analysis</h4>
         </div>
     </div>
+
+    
 </body>
 
 </html>

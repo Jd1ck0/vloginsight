@@ -443,7 +443,7 @@ $videoDataJson = json_encode($videoData);
     </div>
 
 
-    <script>
+<script>
      
         function getLikertDescription(score) {
             switch (score) {
@@ -562,9 +562,9 @@ $videoDataJson = json_encode($videoData);
                 });
             }
         }
-    </script>
+</script>
 
-    <script>
+<script>
        
         const videoData = <?php echo json_encode($videoData); ?>;
         const currentFileId = "<?php echo $fileId; ?>";
@@ -660,7 +660,7 @@ $videoDataJson = json_encode($videoData);
             currentFileId = newFileId;
             loadColorsForFile(currentFileId);
         }
-    </script>
+</script>
 
     <script>
        
