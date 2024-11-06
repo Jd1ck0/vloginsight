@@ -72,6 +72,8 @@ if ($fileName) {
                         'duration' => htmlspecialchars($data[$videoDurationIndex] ?? 'N/A')
                     ];
                 }
+
+                // Process hashtags and comments
                 foreach ($hashtagIndices as $i => $index) {
                     if ($index !== false && !empty($data[$index])) {
                         $hashtagsData[$i + 1][] = htmlspecialchars($data[$index]);
@@ -95,6 +97,7 @@ if ($fileName) {
         return;
     }
 
+    // Execute Node.js script and check result
     $output = [];
     $retval = null;
     exec("node js/likertScale.js \"$filePath\"", $output, $retval);
@@ -443,7 +446,7 @@ $videoDataJson = json_encode($videoData);
     </div>
 
 
-<script>
+    <script>
      
         function getLikertDescription(score) {
             switch (score) {
@@ -562,9 +565,9 @@ $videoDataJson = json_encode($videoData);
                 });
             }
         }
-</script>
+    </script>
 
-<script>
+    <script>
        
         const videoData = <?php echo json_encode($videoData); ?>;
         const currentFileId = "<?php echo $fileId; ?>";
@@ -660,7 +663,7 @@ $videoDataJson = json_encode($videoData);
             currentFileId = newFileId;
             loadColorsForFile(currentFileId);
         }
-</script>
+    </script>
 
     <script>
        

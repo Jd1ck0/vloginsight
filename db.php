@@ -1,10 +1,9 @@
 <?php
-// $servername = "localhost";
-// $username = "u297599468_vloginsight";
-// $password = "Vloginsight2024";
-// $dbname = "u297599468_vloginsight_db";
+// $servername = "127.0.0.1";
+// $username = "vlogInsight";
+// $password = "vlogInsight";
+// $dbname = "vlogInsight";
 
-// local
 
 $servername = "localhost";
 $username = "root";

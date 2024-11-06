@@ -1,4 +1,8 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 include 'db.php';
 
 function generateRandomCode($length = 5)
@@ -9,13 +13,12 @@ function generateRandomCode($length = 5)
     for ($i = 0; $i < $length; $i++) {
         $code .= $characters[rand(0, strlen($characters) - 1)];
     }
-
     return $code;
 }
 
 use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
+use PHPMailer\PHPMailer\SMTP;
 
 
 require 'PHPMailer/PHPMailer/src/PHPMailer.php';
@@ -50,8 +53,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (mysqli_num_rows($resultUsername) > 0) {
         echo '<script>alert("Username is already taken."); window.location.href = "register.php";</script>';
     } else {
-        $sql = "INSERT INTO `user_info` (`username`, `email`, `password`, `confirmation_code`, `forgot_password_code`)
+          $sql = "INSERT INTO `user_info` (`username`, `email`, `password`, `confirmation_code`, `forgot_password_code`)
                 VALUES ('$username', '$email', '$password', '$confirmationCode', '')";
+
 
         if (mysqli_query($con, $sql)) {
             try {

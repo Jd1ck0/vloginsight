@@ -52,7 +52,6 @@ require 'PHPMailer/PHPMailer/src/Exception.php';
 require 'PHPMailer/PHPMailer/src/SMTP.php';
 
 
-
 $mail = new PHPMailer(true);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -87,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $mail->AltBody = 'Your password reset code is: ' . $newCode;
 
                 $mail->send();
-                echo '<script>alert("Please check your email for the password reset code."); window.location.href = "login.php";</script>';
+                echo '<script>alert("Please check your email for the password reset code."); window.location.href = "confirm_fp.php";</script>';
             } catch (Exception $e) {
                 echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
             }

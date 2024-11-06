@@ -3,7 +3,7 @@ const csv = require('csv-parser');
 const Sentiment = require('sentiment');
 const sentiment = new Sentiment();
 
-
+// Accept two CSV files as arguments
 const inputFile1 = process.argv[2];
 const inputFile2 = process.argv[3];
 
@@ -20,7 +20,7 @@ function mapToLikert(score) {
     return 1; // Strongly Negative
 }
 
-
+// Initial structure to hold the comment data for each source file
 const commentsData = {
     file1: {
         video1: [],
@@ -57,9 +57,10 @@ function processFile(inputFile, fileKey) {
                         const result = sentiment.analyze(comment);
                         const likertScore = mapToLikert(result.score);
 
+                        // Get video number from column name and map it to videoX key
                         const videoKey = column.replace(' comments', '');
                         
-            
+                        // Store the processed comment in the appropriate video array for the correct file
                         commentsData[fileKey][videoKey].push({
                             comment: comment,
                             sentimentScore: result.score,
@@ -84,7 +85,8 @@ async function processBothFiles() {
     try {
         await processFile(inputFile1, 'file1');
         await processFile(inputFile2, 'file2');
- 
+        
+        // Output to a JSON file
         const outputFile = 'CommentsScale/c-commentsData.json';
         fs.writeFileSync(outputFile, JSON.stringify(commentsData, null, 2));
         console.log('Comments data has been saved to', outputFile);
